@@ -1,0 +1,24 @@
+let
+    ByteToHex =(x)=>Number.ToText(x,"x"),
+    Json.EscapeChar = (text as text) as text =>
+        if text = """" or text = "\" or text = "/" then "\" & text
+        else if Character.ToNumber(text) < 32 then "\u00" & ByteToHex(Character.ToNumber(text))
+        else text,
+    Json.FormatText = (text as text) as text => """" & Text.Combine(List.Transform(Text.ToList(text), Json.EscapeChar)) & """",
+    Json.FormatLogical = (value as logical) as text => if value then "true" else "false",
+    Number.IsNumber = (value as number) as logical => not Number.IsNaN(value) and value <> Number.PositiveInfinity and value <> Number.NegativeInfinity,
+    Json.FormatNumber = (value as number) as text => if Number.IsNumber(value) then Text.From(value, "") else error Error.Record("Expression.Error", "Not a number", value),
+    Json.FormatList = (value as list) as text => "[" & Text.Combine(List.Transform(value, Json.Format), ",") & "]",
+    Json.FormatPair = (key as text, record as record) as text => Json.FormatText(key) & ":" & Json.Format(Record.Field(record, key)),
+    Json.FormatRecord = (value as record) as text => "{" & Text.Combine(List.Transform(Record.FieldNames(value), (key) => Json.FormatPair(key, value)), ",") & "}",
+    Json.Format = (value) as text =>
+        if value = null then "null"
+        else if value is text then Json.FormatText(value)
+        else if value is logical then Json.FormatLogical(value)
+        else if value is number then Json.FormatNumber(value)
+        else if value is list then Json.FormatList(value)
+        else if value is record then Json.FormatRecord(value)
+        else if value is table then Json.FormatList(Table.ToRecords(value))
+        else error Error.Record("Expression.Error", "Unsupported value", value)
+in
+    Json.Format
