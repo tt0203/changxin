@@ -1,0 +1,6 @@
+let
+fn=(x)=>Html.Table(Text.Replace(Text.FromBinary(Web.Contents("https://www.daxformatter.com/",[Headers=
+[#"content-type"="application/x-www-form-urlencoded"],Content=Text.ToBinary(Uri.BuildQueryString
+([embed="1",version="0.5.3",l="short",fx=x]))])),"<br>","#(lf)"),{{"格式化","body > div > div"}})
+in
+fn
