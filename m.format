@@ -1,0 +1,8 @@
+let fx=(x)=>
+Html.Table(Text.Replace(Text.FromBinary(Web.Contents("https://m-formatter.azurewebsites.net/api/format/v1", [Content
+  = Json.FromValue([code = x, config = [
+  indentation = "  ", 
+  indentationLength = 2, 
+  ws = " "
+]])])),"<br>","#(lf)"),{{"格式化","div"}})
+in fx
