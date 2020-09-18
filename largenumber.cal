@@ -1,0 +1,13 @@
+let
+    fx = (大整数列表)=>
+let
+    补位对齐 = [a=List.Sort(大整数列表,{Text.Length,1}),b=List.Transform(大整数列表,each Text.PadStart(_,Text.Length(a{0}),"0"))][b],
+    按位逆序分组 = List.Reverse(List.Zip(List.Transform(补位对齐,each List.Transform(Text.ToList
+(_),Number.From)))),
+    模拟笔算进位 = List.Accumulate(按位逆序分组,{"",0},(x,y)=>[a=List.Sum(y)+x{1},b={Text.From(Number.Mod(a,10))&x
+{0},Number.RoundDown(a/10)}][b]),
+    最高位进位判断 = [T=模拟笔算进位,R=if 模拟笔算进位{1}=0 then 模拟笔算进位{0} else Text.From(模拟笔算进位{1})&模拟笔算进位{0}][R]
+in
+    最高位进位判断
+in
+    fx
