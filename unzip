@@ -1,0 +1,28 @@
+let                                         
+    fx = (path)=>                                           
+let                                         
+    Header = BinaryFormat.Record([                                          
+        MiscHeader = BinaryFormat.Binary(14),                                           
+        BinarySize = BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger32,0),                                          
+        FileSize   = BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger32,0),                                          
+        FileNameLen= BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger16,0),                                          
+        ExtrasLen  = BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger16,0)]),                                            
+
+    HeaderChoice = BinaryFormat.Choice(                                         
+        BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger32,0),                                           
+        each if _ <> 67324752 then BinaryFormat.Record([IsValid = false,Filename=null,Content=null])                                            
+                              else BinaryFormat.Choice(BinaryFormat.Binary(26),      // Header payload - 14+4+4+2+2                                         
+                                       each BinaryFormat.Record([IsValid  = true,                                           
+                                                                 Filename = BinaryFormat.Text(Header(_)[FileNameLen]),                                          
+                                                                 Extras   = BinaryFormat.Text(Header(_)[ExtrasLen]),                                            
+                                                                 Content  = BinaryFormat.Transform(BinaryFormat.Binary(Header(_)[BinarySize]),                                          
+                                                                                (x) => try Binary.Buffer(Binary.Decompress(x, Compression.Deflate)) otherwise null)                                         
+                                                               ]),                                          
+                        type binary)),                                          
+
+    ZipFormat = BinaryFormat.List(HeaderChoice, each [IsValid]),                                            
+    Entries=List.Transform(List.RemoveLastN(ZipFormat(File.Contents(path)),1),(e)=>[FileName=e[Filename],Content=e[Content]])                                           
+in                                          
+    Entries                                         
+in                                          
+fx
