@@ -1,0 +1,18 @@
+let fx6=(大整数列表)=>
+let
+    fx = (N1,N2,optional k)=>
+let
+    按位逆序分组 = if k=1 then List.Transform(List.Reverse(Text.ToList(N2)),each {Number.From(_),N1}) else 
+    [补位对齐 = [a=List.Sort({N1,N2},Text.Length),b=Text.PadStart(a{0},Text.Length(a{1}),"0"),c={b,a{1}}][c],
+    t = List.Reverse(List.Zip(List.Transform(补位对齐,each List.Transform(Text.ToList
+(_),Number.From))))][t],
+    模拟笔算进位 = List.Accumulate(按位逆序分组,{"",0},(x,y)=>[a=(if k=1 then y{0}*y{1} else y{0}+y{1})+x{1},b={Text.From(Number.Mod(a,10))&x
+{0},Number.RoundDown(a/10)}][b]),
+    最高位进位判断 = [T=模拟笔算进位,R=if 模拟笔算进位{1}=0 then 模拟笔算进位{0} else Text.From(模拟笔算进位{1})&
+模拟笔算进位{0}][R]
+in
+    最高位进位判断,
+fun=(M1,M2)=>List.Accumulate(List.Transform(List.Zip({List.Reverse(Text.ToList(M1)),{0..Text.Length(M1)-1}}),each fx(Number.From(_{0}),M2,1)&Text.Repeat("0",_{1})),"0",fx)
+in  List.Accumulate(大整数列表,"1",fun)
+in
+fx6
