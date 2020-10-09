@@ -22,5 +22,5 @@ for ($i=0;$i -lt $dataset.Tables[0].Columns.Count;$i++)
    $dataset.Tables[0].Columns[$i].ColumnName = $dataSet.Tables[0].Columns[$i].ToString().split("[]")[1]
 }
 #导出文件中已经插入记录，但PowerBI中未能更新！
-$dataset.Tables[0] | export-csv C:\Users\Administrator\Desktop\导出.csv  -encoding utf8 -notypeinformation
+$dataset.Tables[0] | export-csv C:\Users\Admin\Desktop\导出.csv  -encoding utf8 -notypeinformation
 $connection.Close()
