@@ -1,0 +1,76 @@
+﻿Sub test0()
+Dim wb As Workbook, mymodl As Model
+Set wb = GetObject("C:\Users\Administrator\Desktop\PowerPivot.xlsx")
+Set mymodl = wb.Model
+y = mymodl.ModelTables.Item(1).ModelTableColumns.Count
+For x = 1 To y
+    ActiveSheet.Cells(1, x) = mymodl.ModelTables.Item(1).ModelTableColumns.Item(x).Name
+Next
+End Sub
+
+
+https://docs.microsoft.com/zh-cn/office/vba/excel/concepts/about-the-powerpivot-model-object-in-excel
+ModelTables
+ModelRelationships
+DataModelConnection
+一个工作簿能够具有一个且仅有一个Model对象。 Model对象代表顶级对象，其中包含所有连接、关系和表。
+
+
+
+Sub test0()
+Dim wb As Workbook, mymodl As Model
+Set wb = GetObject("C:\Users\Administrator\Desktop\PowerPivot.xlsx")
+wb.windows(1).visible=true
+Set mymodl = wb.Model
+mymodl.ModelMeasures.Add "吹牛逼", mymodl.ModelTables.Item(1), "SUM([成绩])", mymodl.ModelFormatDecimalNumber
+y = mymodl.ModelTables.Item(1).ModelTableColumns.Count
+windows(2).activate
+For x = 1 To y
+    ActiveSheet.Cells(1, x) = mymodl.ModelTables.Item(1).ModelTableColumns.Item(x).Name
+Next
+wb.save
+wb.close
+End Sub
+
+__________________________________________________________________________________________
+
+Sub 宏3()
+    ActiveWorkbook.PivotCaches.Create(SourceType:=xlExternal, SourceData:= _
+        ActiveWorkbook.Connections("ThisWorkbookDataModel"), Version:=6). _
+        CreatePivotTable TableDestination:="Sheet1!R3C6", TableName:="PP透视表", DefaultVersion:=6
+    Cells(3, 6).Select
+    With ActiveSheet.PivotTables("PP透视表").CubeFields("[表2].[班级]")
+        .Orientation = xlRowField
+        .Position = 1
+    End With
+    ActiveSheet.PivotTables("PP透视表").AddDataField ActiveSheet.PivotTables("PP透视表").CubeFields("[Measures].[学生]")
+End Sub
+
+————————————————————————————————————————————————————
+Sub 宏3()
+activesheet.range("F5").Formular="=CUBEVALUE(""ThisWorkbookDataModel"", CUBEMEMBER(""ThisWorkbookDataModel"", ""[Measures].[学生]""))"
+End Sub
+
+______________________________________________________________________________________________________
+
+Sub 宏1()
+Application.CutCopyMode = False
+    With ActiveSheet.ListObjects.Add(SourceType:=4, Source:=ActiveWorkbook. _
+        Connections("连接"), Destination:=Range("$E$1")).TableObject
+        .RowNumbers = False
+        .PreserveFormatting = True
+        .RefreshStyle = 1
+        .AdjustColumnWidth = True
+        .ListObject.DisplayName = "随意_1"
+        .Refresh
+    End With
+    With Selection.ListObject.TableObject.WorkbookConnection.OLEDBConnection
+        .CommandText = Array( _
+        "evaluate SUMMARIZE('表1','表1'[班级],""总成绩"",SUM('表1'[成绩]))")
+        .CommandType = xlCmdDAX
+    End With
+    ActiveWorkbook.Connections("ModelConnection_随意").Refresh
+    Range("F3").Select
+End Sub
+_______________________________________________________________________________________________________
+ado模式引入查询语句查询模型数据：
