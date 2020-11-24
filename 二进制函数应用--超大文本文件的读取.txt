@@ -1,0 +1,8 @@
+﻿Table.LastN(
+[fb=File.Contents("C:\Users\Administrator\Desktop\test2.csv"),
+提取=Csv.Document(
+          BinaryFormat.Record([a=BinaryFormat.Binary(Binary.Length(fb)-666),畅心=BinaryFormat.Binary()])(fb)[畅心],
+[Encoding=936])
+][提取],1)
+
+//  https://pbihub.cn/blog/1192
