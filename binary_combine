@@ -1,0 +1,1 @@
+Csv.Document(Binary.Combine(Folder.Files("C:\Users\Administrator\Desktop\test")[Content]),[Encoding=936])
