@@ -1,0 +1,7 @@
+let 
+fx=(汉字)=>[
+序列 = List.Zip({BinaryFormat.List(BinaryFormat.UnsignedInteger16)(Text.ToBinary("啊芭擦搭蛾发噶骸击击喀垃妈拿哦啪期然撒塌挖挖挖昔压匝",0)),{"A".."Z"}}), 
+汉字首字母= Text.Combine(List.Transform(BinaryFormat.List(BinaryFormat.UnsignedInteger16)(Text.ToBinary(汉字,0)),(y)=>List.Sort(序列,(x)=>1/(x{0}-y-0.1)){0}{1}))
+][汉字首字母]
+in
+fx("爱我中华")
