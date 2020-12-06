@@ -1,6 +1,8 @@
 let
     fx=(x)=>Text.FromBinary(
-    #binary(List.Skip(List.Transform(List.Reverse({0..31}),each Number.BitwiseAnd(Number.BitwiseShiftRight(x,_),1)+48),each _=48))
-    )
+    #binary(List.Transform(
+        List.Reverse({0..Number.RoundDown(Number.Log(x,2))}),
+        each Number.BitwiseAnd(Number.BitwiseShiftRight(x,_),1)+48)
+    ))
 in
-    List.Transform({0..1000000},fx)
+    List.Transform({1..1000000},fx)
