@@ -1,28 +1,23 @@
 let                                         
-    fx = (path)=>                                           
-let                                         
-    Header = BinaryFormat.Record([                                          
-        MiscHeader = BinaryFormat.Binary(14),                                           
-        BinarySize = BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger32,0),                                          
-        FileSize   = BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger32,0),                                          
-        FileNameLen= BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger16,0),                                          
-        ExtrasLen  = BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger16,0)]),                                            
-
-    HeaderChoice = BinaryFormat.Choice(                                         
-        BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger32,0),                                           
-        each if _ <> 67324752 then BinaryFormat.Record([IsValid = false,Filename=null,Content=null])                                            
-                              else BinaryFormat.Choice(BinaryFormat.Binary(26),      // Header payload - 14+4+4+2+2                                         
-                                       each BinaryFormat.Record([IsValid  = true,                                           
-                                                                 Filename = BinaryFormat.Text(Header(_)[FileNameLen]),                                          
-                                                                 Extras   = BinaryFormat.Text(Header(_)[ExtrasLen]),                                            
-                                                                 Content  = BinaryFormat.Transform(BinaryFormat.Binary(Header(_)[BinarySize]),                                          
-                                                                                (x) => try Binary.Buffer(Binary.Decompress(x, Compression.Deflate)) otherwise null)                                         
-                                                               ]),                                          
-                        type binary)),                                          
-
-    ZipFormat = BinaryFormat.List(HeaderChoice, each [IsValid]),                                            
-    Entries=List.Transform(List.RemoveLastN(ZipFormat(File.Contents(path)),1),(e)=>[FileName=e[Filename],Content=e[Content]])                                           
-in                                          
-    Entries                                         
+fx = (path)=>                                           
+let
+fb=File.Contents(path),
+u32=BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger32,0),
+u16=BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger16,0),
+Header=BinaryFormat.Record([MiscHeader=BinaryFormat.Binary(14),BinarySize=u32,FileSize=u32,FileNameLen=u16,ExtrasLen=u16]),
+HeaderChoice=BinaryFormat.Choice(u32,
+    each if _ <> 0x4034B50 then 
+         BinaryFormat.Record([Filename="畅心"]) else                                            
+         BinaryFormat.Choice(BinaryFormat.Binary(26),
+             each BinaryFormat.Record([Filename = BinaryFormat.Text(Header(_)[FileNameLen]),                      
+                                       Extras   = BinaryFormat.Text(Header(_)[ExtrasLen]),                        
+                                       Content  = BinaryFormat.Transform(BinaryFormat.Binary(Header(_)[BinarySize]),                          
+                                                  (x) =>Binary.Decompress(x,1))                                        
+                                       ]),                                          
+             type binary)
+),
+ZipFormat = BinaryFormat.List(HeaderChoice, each [Filename]<>"畅心")(fb)
+in
+ZipFormat                                         
 in                                          
 fx
