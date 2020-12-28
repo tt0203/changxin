@@ -1,1 +1,9 @@
 Csv.Document(Binary.Combine(Folder.Files("C:\Users\Administrator\Desktop\test")[Content]),[Encoding=936])
+
+Csv.Document(
+[a=Folder.Files("C:\Users\Admin\Desktop\test")[Content],
+b=#binary(BinaryFormat.List(BinaryFormat.Byte, (x) => x <>10)(a{0})),
+c=Binary.Length(b),
+d=List.Transform(a,each Binary.Range(_,c)),
+e=Binary.Combine({b}&d)
+][e])
