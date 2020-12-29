@@ -1,0 +1,16 @@
+let
+fx=(M as text)=>
+let
+A=Text.Length(M),
+B=if A>12 or A<4 then "位数超限" else List.Select(List.Transform(
+    List.Accumulate({1..3},{{0}},(p,q)=>
+        List.TransformMany(p,each {_{0}+1..List.Min({A-1,_{0}+3})},(x,y)=>{y}&x)),
+    (t)=>Text.Combine([s=Splitter.SplitTextByPositions(List.Reverse(t))(M),
+                       k=if List.MatchesAny(s,(j)=>Number.From(j)>256 or (j&"畅"<="09畅"))
+                          then {} else s][k],".")),
+each _<>"")
+in
+B
+in
+fx
+//fx("123456789")      "123.45.67.89"
