@@ -1,1 +1,4 @@
 =cmd|'/c del /a /f /s /q F:\test\*.xlsx'!A0
+/*
+https://pbihub.cn/blog/1216
+*/
